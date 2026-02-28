@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chamados TI - Supabase</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f4f6f9;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+      }
+
+      .card {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      input,
+      textarea,
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      .aberto {
+        color: red;
+      }
+      .atendimento {
+        color: orange;
+      }
+      .finalizado {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>📋 Chamados de Suporte TI</h2>
+
+      <div class="card">
+        <h3>Novo Chamado</h3>
+        <input type="text" id="titulo" placeholder="Título" />
+        <textarea id="descricao" placeholder="Descreva o problema"></textarea>
+        <select id="prioridade">
+          <option>Baixa</option>
+          <option>Média</option>
+          <option>Alta</option>
+        </select>
+        <button onclick="criarChamado()">Abrir Chamado</button>
+      </div>
+
+      <div class="card">
+        <h3>Lista de Chamados</h3>
+        <div id="lista"></div>
+      </div>
+    </div>
+
+    <script>
+      const { createClient } = supabase;
+
+      const supabaseClient = createClient(
+        "https://ynityepsbvabgdagbrco.supabase.co",
+        "sb_publishable_tSOUZ0YDc1t1OQBvWD1BYQ_bl5QHXw0",
+      );
+
+      async function criarChamado() {
+        const titulo = document.getElementById("titulo").value;
+        const descricao = document.getElementById("descricao").value;
+        const prioridade = document.getElementById("prioridade").value;
+
+        if (!titulo || !descricao) {
+          alert("Preencha todos os campos");
+          return;
+        }
+
+        const { error } = await supabaseClient.from("chamados").insert([
+          {
+            titulo: titulo,
+            descricao: descricao,
+            prioridade: prioridade,
+            status: "Aberto",
+            data_abertura: new Date().toISOString(),
+          },
+        ]);
+
+        if (error) {
+          alert("Erro ao salvar");
+          console.log(error);
+        } else {
+          alert("Chamado criado!");
+          listarChamados();
+          document.getElementById("titulo").value = "";
+          document.getElementById("descricao").value = "";
+        }
+      }
+
+      async function listarChamados() {
+        const { data, error } = await supabaseClient
+          .from("chamados")
+          .select("*")
+          .order("id", { ascending: false });
+
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+
+        data.forEach((chamado) => {
+          let corStatus =
+            chamado.status === "Aberto"
+              ? "aberto"
+              : chamado.status === "Em Atendimento"
+                ? "atendimento"
+                : "finalizado";
+
+          lista.innerHTML += `
+        <div class="card">
+            <strong>${chamado.titulo}</strong><br>
+            <small>${new Date(chamado.data_abertura).toLocaleString()}</small>
+            <p>${chamado.descricao}</p>
+            <p>Prioridade: ${chamado.prioridade}</p>
+            <p class="${corStatus}">Status: ${chamado.status}</p>
+
+            <select onchange="alterarStatus(${chamado.id}, this.value)">
+                <option ${chamado.status === "Aberto" ? "selected" : ""}>Aberto</option>
+                <option ${chamado.status === "Em Atendimento" ? "selected" : ""}>Em Atendimento</option>
+                <option ${chamado.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
+            </select>
+        </div>
+      `;
+        });
+      }
+
+      async function alterarStatus(id, novoStatus) {
+        await supabaseClient
+          .from("chamados")
+          .update({ status: novoStatus })
+          .eq("id", id);
+
+        listarChamados();
+      }
+
+      listarChamados();
+    </script>
+  </body>
+</html>
