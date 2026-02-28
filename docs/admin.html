@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Chamados TI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <h2>Login Admin</h2>
+
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
+
+    <hr />
+
+    <h2>Chamados</h2>
+    <div id="lista"></div>
+
+    <script>
+      const supabase = window.supabase.createClient(
+        "SUA_URL",
+        "SUA_PUBLIC_KEY",
+      );
+
+      async function login() {
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("senha").value;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: senha,
+        });
+
+        if (error) {
+          alert("Erro no login");
+        } else {
+          alert("Login realizado!");
+          listarChamados();
+        }
+      }
+
+      async function listarChamados() {
+        const { data, error } = await supabase
+          .from("chamados")
+          .select("*")
+          .order("id", { ascending: false });
+
+        if (error) {
+          alert("Erro ao buscar chamados");
+        } else {
+          let html = "";
+          data.forEach((chamado) => {
+            html += `
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+          <b>${chamado.nome}</b><br>
+          ${chamado.descricao}<br>
+          <small>Status: ${chamado.status}</small>
+        </div>
+      `;
+          });
+          document.getElementById("lista").innerHTML = html;
+        }
+      }
+    </script>
+  </body>
+</html>
