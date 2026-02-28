@@ -7,6 +7,7 @@
   </head>
   <body>
     <h2>Login Admin</h2>
+    <a href="index.html"><button>Voltar</button></a>
 
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="senha" placeholder="Senha" />
@@ -35,7 +36,7 @@
         if (error) {
           alert("Erro no login: " + error.message);
         } else {
-          alert("Login realizado!");
+          console.log("Login realizado como administrador")
           listarChamados();
         }
       }
@@ -54,10 +55,10 @@
             html += `
         <div style="border:1px solid #ccc; padding:10px; margin:10px;">
           <b>${chamado.titulo}</b><br>
-          ${chamado.descricao}<br>
-          ${chamado.data_abertura}<br>
-          ${chamado.prioridade}<br>
-          <small>Status: ${chamado.status}</small>
+          Descrisção: ${chamado.descricao}<br>
+          Data: ${chamado.data_abertura}<br>
+          Prioridade: ${chamado.prioridade}<br>
+          Status: ${chamado.status}
         </div>
       `;
           });

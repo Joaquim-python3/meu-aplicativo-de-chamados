@@ -63,11 +63,16 @@
   <body>
     <div class="container">
       <h2>📋 Chamados de Suporte TI</h2>
+      <hr>
+      v1.1
+      <a href="admin.html"><button style="width: 60px;">ADMIN</button></a>
+
 
       <div class="card">
         <h3>Novo Chamado</h3>
         <input type="text" id="titulo" placeholder="Título" />
         <textarea id="descricao" placeholder="Descreva o problema"></textarea>
+        <p>Prioridade:</p>
         <select id="prioridade">
           <option>Baixa</option>
           <option>Média</option>
@@ -77,7 +82,7 @@
       </div>
 
       <div class="card">
-        <h3>Lista de Chamados</h3>
+        <h3>Lista de Chamados abertas nesse navegador</h3>
         <div id="lista"></div>
       </div>
     </div>
