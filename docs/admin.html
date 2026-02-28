@@ -27,13 +27,13 @@
         const email = document.getElementById("email").value;
         const senha = document.getElementById("senha").value;
 
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: email,
           password: senha,
         });
 
         if (error) {
-          alert("Erro no login");
+          alert("Erro no login: " + error.message);
         } else {
           alert("Login realizado!");
           listarChamados();
@@ -47,7 +47,7 @@
           .order("id", { ascending: false });
 
         if (error) {
-          alert("Erro ao buscar chamados");
+          alert("Erro ao buscar chamados: " + error.message);
         } else {
           let html = "";
           data.forEach((chamado) => {
