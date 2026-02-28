@@ -53,8 +53,10 @@
           data.forEach((chamado) => {
             html += `
         <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-          <b>${chamado.nome}</b><br>
+          <b>${chamado.titulo}</b><br>
           ${chamado.descricao}<br>
+          ${chamado.data_abertura}<br>
+          ${chamado.prioridade}<br>
           <small>Status: ${chamado.status}</small>
         </div>
       `;
